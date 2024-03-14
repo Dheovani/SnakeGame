@@ -1,4 +1,5 @@
 #include "BWriter.hpp"
+#include <fstream>
 #include <iostream>
 
 using Utils::BWriter, Utils::Record;

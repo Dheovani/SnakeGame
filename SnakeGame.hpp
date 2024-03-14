@@ -13,7 +13,7 @@ namespace Game
 {
 	class SnakeGame
 	{
-		bool MAIN_MENU = true;
+		bool MAIN_MENU = false;
 		bool GAME_OVER = false;
 
 		Utils::BWriter bWriter;
@@ -62,8 +62,6 @@ namespace Game
 		void watchEvents(sf::Event &event);
 
 	public:
-		SnakeGame() = default;
-
 		// Main function. Runs the game event loop
 		void run();
 

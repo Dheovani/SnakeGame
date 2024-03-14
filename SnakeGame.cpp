@@ -1,5 +1,7 @@
 #include "SnakeGame.hpp"
 #include <random>
+#include <thread>
+#include <chrono>
 #include <iostream>
 
 using namespace Game;
@@ -84,7 +86,7 @@ void SnakeGame::updateNodeCoords(std::shared_ptr<Snake> node, const Coords &coor
 
 void SnakeGame::drawSnake()
 {
-	sf::RectangleShape snake(sf::Vector2f(20, 20));
+	sf::RectangleShape snake(sf::Vector2f(10, 10));
 	snake.setFillColor(sf::Color::Green);
 
 	std::shared_ptr<Snake> currentNode = head;
@@ -99,7 +101,7 @@ void SnakeGame::drawSnake()
 
 void SnakeGame::drawFood()
 {
-	sf::RectangleShape foodRec(sf::Vector2f(20, 20));
+	sf::RectangleShape foodRec(sf::Vector2f(10, 10));
 	foodRec.setFillColor(sf::Color::Red);
 	foodRec.setPosition((float)food->coords.x, (float)food->coords.y);
 
@@ -161,11 +163,11 @@ void SnakeGame::watchEvents(sf::Event &event)
 			}
 
 			break;
-			// FIXME: Sometimes it lags instead of walking the default direction
-			//default:
-				//moveSnake(lastKey);
 		}
 	}
+
+	moveSnake(lastKey);
+	std::this_thread::sleep_for(std::chrono::milliseconds(30));
 }
 
 void SnakeGame::run()
