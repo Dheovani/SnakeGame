@@ -140,8 +140,10 @@ void SnakeGame::watchEvents(sf::Event &event)
 	std::this_thread::sleep_for(std::chrono::milliseconds(30));
 }
 
-SnakeGame::SnakeGame()
+void Game::SnakeGame::init()
 {
+	GAME_OVER = false;
+
 	head = std::make_shared<Snake>();
 	head->size = 1;
 	head->coords = generateRandomCoords();
@@ -161,6 +163,8 @@ SnakeGame::SnakeGame()
 
 void SnakeGame::run()
 {
+	init();
+
 	while (window->isOpen()) {
 		sf::Event event;
 
@@ -171,13 +175,7 @@ void SnakeGame::run()
 				event.type == sf::Event::KeyPressed &&
 				event.key.code == sf::Keyboard::Enter)
 			{
-				head->size = 1;
-				head->node = nullptr;
-				head->coords = generateRandomCoords();
-
-				food->coords = generateRandomCoords();
-
-				GAME_OVER = false;
+				init();
 			}
 
 			continue;

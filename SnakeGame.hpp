@@ -87,7 +87,8 @@ namespace Game
 		void watchEvents(sf::Event &event);
 
 	public:
-		SnakeGame();
+		// Initializes game's variables
+		void init();
 
 		// Main function. Runs the game event loop
 		void run();
