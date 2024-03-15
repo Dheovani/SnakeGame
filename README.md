@@ -1,6 +1,6 @@
 # SnakeGame
 
-## ADD GAMEPLAY
+[Gameplay](https://github.com/Dheovani/SnakeGame/assets/79609196/dbbe117f-a8fb-4a6a-ab3d-7d1fde38cffb)
 
 This is a classic Snake game implemented in C++. It's a simple yet entertaining game where the player controls a snake that grows longer as it consumes food.
 
