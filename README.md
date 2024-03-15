@@ -17,8 +17,7 @@ This is a classic Snake game implemented in C++. It's a simple yet entertaining 
   - Down:  `↓`
   - Left:  `←`
   - Right: `→`
-  - Escape: ⏸️
-  - S: 💾
+  - Enter: 🔄
 
 ## Gameplay
 
