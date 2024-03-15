@@ -13,7 +13,7 @@ namespace Game
 {
 	class SnakeGame
 	{
-		bool MAIN_MENU = false;
+		bool MAIN_MENU = true;
 		bool GAME_OVER = false;
 
 		Utils::BWriter bWriter;
@@ -49,8 +49,11 @@ namespace Game
 		// Draw the food in the map
 		void drawFood();
 
-		// Adds a new node to the Snake, starting from the head
-		void addNode();
+		/**
+		 * Adds a new node to the Snake, starting from the head
+		 * @return std::shared_ptr<Snake> - the new node
+		 */
+		std::shared_ptr<Snake> addNode();
 
 		// Verifies if a collision with maps limits or nodes happened
 		void checkCollisions();

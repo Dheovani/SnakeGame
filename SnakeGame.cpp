@@ -108,8 +108,9 @@ void SnakeGame::drawFood()
 	window->draw(foodRec);
 }
 
-void SnakeGame::addNode()
+std::shared_ptr<Snake> SnakeGame::addNode()
 {
+	head->size++;
 	std::shared_ptr<Snake> currentNode = head;
 
 	while (currentNode->node != nullptr)
@@ -119,6 +120,8 @@ void SnakeGame::addNode()
 	currentNode->node->size = 1;
 	currentNode->node->coords = currentNode->coords;
 	currentNode->node->node = nullptr;
+
+	return currentNode->node;
 }
 
 void SnakeGame::checkCollisions()
@@ -283,6 +286,20 @@ void SnakeGame::dealWithMenuSelection(sf::Event &event)
 			}
 			// Continue button
 			else if (buttons[CONTINUE].bounds.contains(mousePos)) {
+				const Utils::Record record = bWriter.read();
+				food->coords = record.food.coords;
+				lastKey = record.direction;
+
+				std::shared_ptr<Snake> currentNode = head;
+				for (size_t i = 0; i < record.snakeNodes.size(); i++) {
+					const Utils::Snake snake = record.snakeNodes.at(i);
+					currentNode->coords = snake.coords;
+
+					currentNode = currentNode->node == nullptr && (i + 1) < record.snakeNodes.size()
+						? addNode()
+						: currentNode->node;
+				}
+
 				MAIN_MENU = false;
 				GAME_OVER = false;
 			}
