@@ -134,14 +134,11 @@
     <Font Include="font.ttf" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BWriter.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SnakeGame.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BWriter.hpp" />
     <ClInclude Include="SnakeGame.hpp" />
-    <ClInclude Include="Utils.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />

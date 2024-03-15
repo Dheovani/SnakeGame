@@ -1,22 +1,47 @@
 #pragma once
 
 #include <memory>
-#include "Utils.hpp"
-#include "BWriter.hpp"
+#include <SFML/Graphics.hpp>
 
 #define WINDOW_WIDTH 1000
 #define WINDOW_HEIGHT 600
 
-using Utils::Coords, Utils::Snake, Utils::Food;
-
 namespace Game
 {
+	typedef struct Coords
+	{
+		size_t x, y;
+
+		// Assignment operator overload
+		void operator=(const Coords& newCoords)
+		{
+			x = newCoords.x;
+			y = newCoords.y;
+		}
+
+		// Comparisson operator overload
+		bool operator==(const Coords& newCoords) const
+		{
+			return x == newCoords.x && y == newCoords.y;
+		}
+	} Coords;
+
+	typedef struct Snake
+	{
+		size_t size;
+		Coords coords;
+		std::shared_ptr<Snake> node;
+	} Snake;
+
+	typedef struct Food
+	{
+		Coords coords;
+	} Food;
+
 	class SnakeGame
 	{
-		bool MAIN_MENU = true;
 		bool GAME_OVER = false;
 
-		Utils::BWriter bWriter;
 		sf::Keyboard::Key lastKey;
 		std::shared_ptr<Food> food;
 		std::shared_ptr<Snake> head;
@@ -26,9 +51,6 @@ namespace Game
 		 * @return Coords
 		 */
 		inline Coords generateRandomCoords();
-
-		// Initializes game variables
-		inline void init();
 
 		/**
 		 * Defines the position of the snake in the map
@@ -65,31 +87,12 @@ namespace Game
 		void watchEvents(sf::Event &event);
 
 	public:
+		SnakeGame();
+
 		// Main function. Runs the game event loop
 		void run();
 
 		// Prints the GameOver screen
 		void gameOver() noexcept(false);
-
-	private: // MENU OPTIONS
-		typedef struct MenuButton {
-			sf::FloatRect bounds;
-			std::string text;
-		} MenuButton;
-
-		enum MenuOptions
-		{
-			NEW_GAME,
-			CONTINUE,
-			EXIT
-		};
-
-		std::vector<MenuButton> buttons;
-
-		/**
-		 * Draws the menu window and watch for mouse button events
-		 * @param sf::Event &event
-		 */
-		void dealWithMenuSelection(sf::Event &event);
 	};
 }

@@ -19,30 +19,6 @@ inline Coords SnakeGame::generateRandomCoords()
 	return coord;
 }
 
-inline void SnakeGame::init()
-{
-	head = std::make_shared<Snake>();
-	head->size = 1;
-	head->coords = generateRandomCoords();
-	head->node = nullptr;
-
-	food = std::make_shared<Food>();
-	food->coords = generateRandomCoords();
-
-	// Moves right by default
-	lastKey = sf::Keyboard::Right;
-
-	window = std::make_shared<sf::RenderWindow>(
-		sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT),
-		"Snake Game",
-		sf::Style::Titlebar | sf::Style::Close);
-
-	buttons.resize(3);
-	buttons[NEW_GAME].text = "New Game";
-	buttons[CONTINUE].text = "Continue";
-	buttons[EXIT].text = "Exit";
-}
-
 void SnakeGame::moveSnake(sf::Keyboard::Key key)
 {
 	lastKey = key;
@@ -154,16 +130,7 @@ void SnakeGame::watchEvents(sf::Event &event)
 
 			break;
 		case sf::Event::KeyPressed:
-			if (event.key.code == sf::Keyboard::S) {
-				Utils::Record record{ lastKey, *food, bWriter.buildVector(head) };
-				bWriter.write(record);
-			}
-			else if (event.key.code == sf::Keyboard::Escape) {
-				MAIN_MENU = !MAIN_MENU;
-			}
-			else {
-				moveSnake(event.key.code);
-			}
+			moveSnake(event.key.code);
 
 			break;
 		}
@@ -173,19 +140,29 @@ void SnakeGame::watchEvents(sf::Event &event)
 	std::this_thread::sleep_for(std::chrono::milliseconds(30));
 }
 
+SnakeGame::SnakeGame()
+{
+	head = std::make_shared<Snake>();
+	head->size = 1;
+	head->coords = generateRandomCoords();
+	head->node = nullptr;
+
+	food = std::make_shared<Food>();
+	food->coords = generateRandomCoords();
+
+	// Moves right by default
+	lastKey = sf::Keyboard::Right;
+
+	window = std::make_shared<sf::RenderWindow>(
+		sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT),
+		"Snake Game",
+		sf::Style::Titlebar | sf::Style::Close);
+}
+
 void SnakeGame::run()
 {
-	init();
-
 	while (window->isOpen()) {
 		sf::Event event;
-
-		if (MAIN_MENU) {
-			// FIXME: Food and snake are not drawn after choosing a menu option
-			dealWithMenuSelection(event);
-
-			continue;
-		}
 
 		if (GAME_OVER) {
 			gameOver();
@@ -194,7 +171,13 @@ void SnakeGame::run()
 				event.type == sf::Event::KeyPressed &&
 				event.key.code == sf::Keyboard::Enter)
 			{
-				MAIN_MENU = true;
+				head->size = 1;
+				head->node = nullptr;
+				head->coords = generateRandomCoords();
+
+				food->coords = generateRandomCoords();
+
+				GAME_OVER = false;
 			}
 
 			continue;
@@ -220,7 +203,7 @@ void SnakeGame::gameOver()
 	}
 
 	sf::Text gameOverText("Game Over", font, 50),
-		sub("Press \"Enter\" to go back to main menu", font, 20);
+		sub("Press \"Enter\" to go back to play again", font, 20);
 	sf::FloatRect textBounds = gameOverText.getLocalBounds();
 
 	unsigned int windowWidth = window->getSize().x;
@@ -238,78 +221,4 @@ void SnakeGame::gameOver()
 	window->draw(gameOverText);
 	window->draw(sub);
 	window->display();
-}
-
-void SnakeGame::dealWithMenuSelection(sf::Event &event)
-{
-	window->clear(sf::Color::Black);
-
-	sf::Font font;
-	if (!font.loadFromFile("font.ttf"))
-		throw "Failed loading font!!";
-
-	sf::Text saveMsg;
-	saveMsg.setFont(font);
-	saveMsg.setCharacterSize(24);
-	saveMsg.setString("Click \"s\" to save or \"ESC\" to pause anytime wanted!");
-	saveMsg.setPosition(10, 10);
-
-	window->draw(saveMsg);
-
-	for (int i = 1; i <= 3; i++) {
-		sf::Text button;
-		button.setFont(font);
-		button.setCharacterSize(24);
-		button.setString(buttons[i - 1].text);
-		button.setPosition(500, (float)(150 * i));
-
-		sf::FloatRect bounds = button.getLocalBounds();
-		button.setOrigin(bounds.left + bounds.width / 2.0f, bounds.top + bounds.height / 2.0f);
-		buttons[i - 1].bounds = button.getGlobalBounds();
-
-		window->draw(button);
-	}
-
-	window->display();
-
-	if (window->pollEvent(event)) {
-		if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
-			sf::Vector2f mousePos = window->mapPixelToCoords(sf::Mouse::getPosition(*window));
-
-			// New Game button
-			if (buttons[NEW_GAME].bounds.contains(mousePos)) {
-				bWriter.deleteRecords();
-				head->coords = generateRandomCoords();
-
-				MAIN_MENU = false;
-				GAME_OVER = false;
-			}
-			// Continue button
-			else if (buttons[CONTINUE].bounds.contains(mousePos)) {
-				const Utils::Record record = bWriter.read();
-				food->coords = record.food.coords;
-				lastKey = record.direction;
-
-				std::shared_ptr<Snake> currentNode = head;
-				for (size_t i = 0; i < record.snakeNodes.size(); i++) {
-					const Utils::Snake snake = record.snakeNodes.at(i);
-					currentNode->coords = snake.coords;
-
-					currentNode = currentNode->node == nullptr && (i + 1) < record.snakeNodes.size()
-						? addNode()
-						: currentNode->node;
-				}
-
-				MAIN_MENU = false;
-				GAME_OVER = false;
-			}
-			// Exit button
-			else if (buttons[EXIT].bounds.contains(mousePos)) {
-				window->close();
-			}
-		}
-		else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
-			MAIN_MENU = !MAIN_MENU;
-		}
-	}
 }
